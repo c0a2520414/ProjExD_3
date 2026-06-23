@@ -140,6 +140,27 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Score:
+    """
+    スコア表示に関するクラス
+    """
+    def __init__(self):
+        """
+        フォント、文字色、初期スコアを設定し、初期文字列Surfaceを生成する
+        """
+        self.fonto = pg.font.Font(None, 50)
+        self.iro = (0, 0, 255)
+        self.score = 0
+        self.img = self.fonto.render(f"Score:{self.score}", 0, self.iro)
+        self.rct = self.img.get_rect()
+        self.rct.center = (100,HEIGHT - 50)
+
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコアを反映した文字列Surfaceを生成し、スクリーンにblitする
+        """
+        self.img = self.fonto.render(f"Score:{self.score}", 0, self.iro)
+        screen.blit(self.img, self.rct)
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -152,7 +173,7 @@ def main():
     #     bomb = Bomb((255, 0, 0), 10)
     #     bombs.append(bomb)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
-
+    score_board = Score()
     beam = None  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
@@ -183,6 +204,7 @@ def main():
                     pg.display.update()
                     beam = None
                     bombs [i] = None
+                    score_board.score += 1
         bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
@@ -191,6 +213,9 @@ def main():
             beam.update(screen)   
         for bomb in bombs:
             bomb.update(screen)
+
+        score_board.update(screen)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
